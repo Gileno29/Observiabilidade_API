@@ -17,11 +17,28 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.alura.forum.config.security.TokenService;
 import br.com.alura.forum.controller.dto.TokenDto;
 import br.com.alura.forum.controller.form.LoginForm;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 @RestController
 @RequestMapping("/auth")
 @Profile(value = {"prod", "test"})
 public class AutenticacaoController {
+	
+	Counter authUserSucess;
+	Counter authUserErrors;
+	
+	
+	
+	public AutenticacaoController(MeterRegistry registry) {
+		authUserSucess = Counter.builder("auth_user_sucess")
+				.description("usuarios autenticados")
+				.register(registry);
+				
+		authUserErrors = Counter.builder("auth_user_erros")
+		.description("erros de login")
+		.register(registry);
+	}
 	
 	@Autowired
 	private AuthenticationManager authManager;
